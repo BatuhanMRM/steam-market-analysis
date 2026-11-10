@@ -5,6 +5,8 @@ A data analysis of **75,551 games** released on Steam between 2018 and 2024, bui
 
 The results are presented as an interactive, plain-language story site (`site/`), in English with a Turkish version.
 
+**Live site: https://batuhanmrm.github.io/steam-market-analysis/** ([Türkçe](https://batuhanmrm.github.io/steam-market-analysis/?lang=tr))
+
 ## Key findings
 
 - Yearly game releases on Steam grew **14×** from 2014 to 2025 (1,488 → 21,530).
