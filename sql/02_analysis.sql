@@ -129,6 +129,7 @@ SELECT
     count(*) AS games,
     round(100.0 * avg(is_visible::INT), 1) AS visible_pct
 FROM cohort
+WHERE n_languages > 0   -- games with no language data are left out, not counted as single-language
 GROUP BY 1 ORDER BY sort_key;
 
 -- name: turkish_support
@@ -175,6 +176,6 @@ SELECT
     count(*) AS games,
     round(100.0 * avg(is_visible::INT), 1) AS visible_pct
 FROM cohort
-WHERE price > 0 AND price < 20
+WHERE price > 0 AND price < 20 AND n_languages > 0
 GROUP BY 1, 2
 ORDER BY min(price), min(n_languages);

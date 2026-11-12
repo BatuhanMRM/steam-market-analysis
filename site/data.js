@@ -280,7 +280,7 @@ window.STEAM_DATA = {
  "languages": [
   {
    "langs": "1",
-   "games": 40243,
+   "games": 40153,
    "visible_pct": 2.8
   },
   {
@@ -464,7 +464,7 @@ window.STEAM_DATA = {
   {
    "band": "$0–5",
    "langs": "1",
-   "games": 23193,
+   "games": 23174,
    "visible_pct": 1.6
   },
   {
@@ -482,7 +482,7 @@ window.STEAM_DATA = {
   {
    "band": "$5–10",
    "langs": "1",
-   "games": 5596,
+   "games": 5564,
    "visible_pct": 3.8
   },
   {
@@ -523,17 +523,17 @@ window.STEAM_DATA = {
   "price_bands": "-- How price relates to being seen and to player satisfaction.\nSELECT\n    CASE\n        WHEN price = 0   THEN 'Free'\n        WHEN price < 5   THEN '$0–5'\n        WHEN price < 10  THEN '$5–10'\n        WHEN price < 20  THEN '$10–20'\n        WHEN price < 30  THEN '$20–30'\n        ELSE '$30+'\n    END AS band,\n    min(price) AS sort_key,\n    count(*) AS games,\n    round(100.0 * avg(is_visible::INT), 1) AS visible_pct,\n    median(reviews) AS median_reviews,\n    round(100.0 * median(positive_ratio) FILTER (WHERE reviews >= 50), 1) AS median_positive\nFROM cohort\nGROUP BY 1 ORDER BY sort_key;",
   "genres": "-- Supply vs. demand: a genre's share of releases vs. its share of reviews.\nWITH g AS (\n    SELECT unnest(genres) AS genre, reviews, is_visible FROM cohort\n),\ntotals AS (SELECT count(*) AS n, sum(reviews) AS r FROM cohort)\nSELECT\n    genre,\n    count(*) AS games,\n    round(100.0 * count(*) / (SELECT n FROM totals), 1) AS pct_of_releases,\n    round(100.0 * sum(reviews) / (SELECT r FROM totals), 1) AS pct_of_reviews,\n    round(100.0 * avg(is_visible::INT), 1) AS visible_pct,\n    median(reviews) AS median_reviews\nFROM g\nWHERE genre IN ('Indie','Casual','Action','Adventure','Simulation','Strategy',\n                'RPG','Free To Play','Sports','Racing','Massively Multiplayer')\nGROUP BY 1\nORDER BY games DESC;",
   "features": "-- \"Care\" signals: share of games seen, with vs. without each feature.\n-- Note: correlation, not causation. Bigger teams add these features more often.\nSELECT 'achievements' AS feature,\n       round(100.0 * avg(is_visible::INT) FILTER (WHERE has_achievements), 1)     AS with_pct,\n       round(100.0 * avg(is_visible::INT) FILTER (WHERE NOT has_achievements), 1) AS without_pct,\n       round(100.0 * avg(has_achievements::INT), 1)                               AS adoption_pct\nFROM cohort\nUNION ALL\nSELECT 'controller',\n       round(100.0 * avg(is_visible::INT) FILTER (WHERE has_controller), 1),\n       round(100.0 * avg(is_visible::INT) FILTER (WHERE NOT has_controller), 1),\n       round(100.0 * avg(has_controller::INT), 1)\nFROM cohort\nUNION ALL\nSELECT 'cloud',\n       round(100.0 * avg(is_visible::INT) FILTER (WHERE has_cloud), 1),\n       round(100.0 * avg(is_visible::INT) FILTER (WHERE NOT has_cloud), 1),\n       round(100.0 * avg(has_cloud::INT), 1)\nFROM cohort\nUNION ALL\nSELECT 'coop',\n       round(100.0 * avg(is_visible::INT) FILTER (WHERE has_coop), 1),\n       round(100.0 * avg(is_visible::INT) FILTER (WHERE NOT has_coop), 1),\n       round(100.0 * avg(has_coop::INT), 1)\nFROM cohort\nUNION ALL\nSELECT 'mac_linux',\n       round(100.0 * avg(is_visible::INT) FILTER (WHERE mac OR linux), 1),\n       round(100.0 * avg(is_visible::INT) FILTER (WHERE NOT (mac OR linux)), 1),\n       round(100.0 * avg((mac OR linux)::INT), 1)\nFROM cohort\nORDER BY with_pct - without_pct DESC;",
-  "languages": "-- How does the number of supported languages relate to being seen?\nSELECT\n    CASE\n        WHEN n_languages <= 1  THEN '1'\n        WHEN n_languages <= 3  THEN '2–3'\n        WHEN n_languages <= 6  THEN '4–6'\n        WHEN n_languages <= 10 THEN '7–10'\n        ELSE '11+'\n    END AS langs,\n    min(n_languages) AS sort_key,\n    count(*) AS games,\n    round(100.0 * avg(is_visible::INT), 1) AS visible_pct\nFROM cohort\nGROUP BY 1 ORDER BY sort_key;",
+  "languages": "-- How does the number of supported languages relate to being seen?\nSELECT\n    CASE\n        WHEN n_languages <= 1  THEN '1'\n        WHEN n_languages <= 3  THEN '2–3'\n        WHEN n_languages <= 6  THEN '4–6'\n        WHEN n_languages <= 10 THEN '7–10'\n        ELSE '11+'\n    END AS langs,\n    min(n_languages) AS sort_key,\n    count(*) AS games,\n    round(100.0 * avg(is_visible::INT), 1) AS visible_pct\nFROM cohort\nWHERE n_languages > 0   -- games with no language data are left out, not counted as single-language\nGROUP BY 1 ORDER BY sort_key;",
   "turkish_support": "-- Share of games supporting Turkish, by release year.\nSELECT release_year AS year,\n       round(100.0 * avg(supports_turkish::INT), 1) AS pct_turkish,\n       round(100.0 * avg(supports_turkish::INT) FILTER (WHERE reviews >= 500), 1) AS pct_turkish_visible\nFROM games\nWHERE release_year BETWEEN 2014 AND 2025\nGROUP BY 1 ORDER BY 1;",
   "release_month": "-- Which months are most crowded, and which launches get seen more?\nSELECT release_month AS month,\n       count(*) AS games,\n       round(100.0 * avg(is_visible::INT), 1) AS visible_pct\nFROM cohort\nGROUP BY 1 ORDER BY 1;",
   "rating_vs_reviews": "-- Does being liked help a game get seen? Share seen by rating band.\nSELECT\n    CASE\n        WHEN positive_ratio < 0.5  THEN '<50%'\n        WHEN positive_ratio < 0.7  THEN '50–69%'\n        WHEN positive_ratio < 0.8  THEN '70–79%'\n        WHEN positive_ratio < 0.9  THEN '80–89%'\n        WHEN positive_ratio < 0.95 THEN '90–94%'\n        ELSE '95%+'\n    END AS rating,\n    min(positive_ratio) AS sort_key,\n    count(*) AS games,\n    round(100.0 * avg(is_visible::INT), 1) AS visible_pct\nFROM cohort\nWHERE reviews >= 10\nGROUP BY 1 ORDER BY sort_key;",
-  "languages_controlled": "-- Control: is the language effect just \"big team = expensive game\"?\n-- Compare within the same price band.\nSELECT\n    CASE WHEN price < 5 THEN '$0–5' WHEN price < 10 THEN '$5–10' ELSE '$10–20' END AS band,\n    CASE WHEN n_languages <= 1 THEN '1' WHEN n_languages <= 6 THEN '2–6' ELSE '7+' END AS langs,\n    count(*) AS games,\n    round(100.0 * avg(is_visible::INT), 1) AS visible_pct\nFROM cohort\nWHERE price > 0 AND price < 20\nGROUP BY 1, 2\nORDER BY min(price), min(n_languages);"
+  "languages_controlled": "-- Control: is the language effect just \"big team = expensive game\"?\n-- Compare within the same price band.\nSELECT\n    CASE WHEN price < 5 THEN '$0–5' WHEN price < 10 THEN '$5–10' ELSE '$10–20' END AS band,\n    CASE WHEN n_languages <= 1 THEN '1' WHEN n_languages <= 6 THEN '2–6' ELSE '7+' END AS langs,\n    count(*) AS games,\n    round(100.0 * avg(is_visible::INT), 1) AS visible_pct\nFROM cohort\nWHERE price > 0 AND price < 20 AND n_languages > 0\nGROUP BY 1, 2\nORDER BY min(price), min(n_languages);"
  },
  "meta": {
   "total_games": 114322,
   "cohort_games": 75551,
   "data_until": "2026-09-08",
-  "generated": "2026-11-10",
+  "generated": "2026-11-12",
   "source": "FronkonGames/steam-games-dataset (MIT) — Steam API + SteamSpy"
  }
 };

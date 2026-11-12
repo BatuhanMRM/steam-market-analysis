@@ -11,7 +11,7 @@ The results are presented as an interactive, plain-language story site (`site/`)
 
 - Yearly game releases on Steam grew **14×** from 2014 to 2025 (1,488 → 21,530).
 - Only **7.9%** of games reach 500 user reviews. The top 1% of games collect **77.6%** of all reviews.
-- Being cheap doesn't help: **5%** of games under $5 get seen, versus **29.7%** in the $20–30 range.
+- Being cheap doesn't help: **5%** of paid games under $5 get seen, versus **29.7%** in the $20–30 range.
 - Language support is the strongest signal, and it holds within the same price band: among $10–20 games, **7.2%** of single-language titles get seen versus **44.6%** of those with 7+ languages.
 - Casual games are 45.7% of releases but get only 17.1% of reviews: supply far exceeds demand.
 
